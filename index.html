@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WORKEN — Blokecore | Семей</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a08;
+    --dark: #111110;
+    --card: #1a1a17;
+    --beige: #c4a882;
+    --beige-light: #d4bc9e;
+    --white: #f0ece4;
+    --muted: #6b6558;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--black); color: var(--white); font-family: 'Barlow', sans-serif; font-weight: 300; overflow-x: hidden; }
+
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; padding: 12px 48px; background: rgba(10,10,8,0.88); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(196,168,130,0.12); }
+  .nav-logo img { height: 48px; width: auto; object-fit: contain; border-radius: 8px; }
+  .nav-links { display: flex; gap: 36px; list-style: none; }
+  .nav-links a { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color 0.3s; }
+  .nav-links a:hover { color: var(--beige); }
+  .nav-right { display: flex; align-items: center; gap: 16px; }
+  .cart-btn { cursor: pointer; font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--white); background: none; border: 1px solid rgba(196,168,130,0.25); padding: 10px 20px; transition: all 0.3s; display: flex; align-items: center; gap: 8px; }
+  .cart-btn:hover { border-color: var(--beige); color: var(--beige); }
+  .cart-count { background: var(--beige); color: var(--black); font-size: 11px; font-weight: 700; border-radius: 50%; width: 18px; height: 18px; align-items: center; justify-content: center; display: none; }
+  .cart-count.visible { display: flex; }
+  .nav-cta { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--black); background: var(--beige); padding: 10px 24px; text-decoration: none; transition: background 0.3s; }
+  .nav-cta:hover { background: var(--beige-light); }
+
+  .hero { min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; position: relative; padding-top: 76px; overflow: hidden; }
+  .hero-video-bg { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
+  .hero-video-bg video { width: 100%; height: 120%; object-fit: cover; opacity: 0.18; will-change: transform; }
+  .hero-video-overlay { position: absolute; inset: 0; background: linear-gradient(to right, rgba(10,10,8,0.95) 40%, rgba(10,10,8,0.4) 100%); z-index: 1; }
+  .hero-left { display: flex; flex-direction: column; justify-content: center; padding: 80px 48px 80px 80px; position: relative; z-index: 2; }
+  .hero-tag { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 5px; text-transform: uppercase; color: var(--beige); margin-bottom: 24px; display: flex; align-items: center; gap: 12px; }
+  .hero-tag::before { content: ''; display: block; width: 32px; height: 1px; background: var(--beige); }
+  .hero-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(80px, 10vw, 140px); line-height: 0.9; letter-spacing: 2px; color: var(--white); margin-bottom: 32px; }
+  .hero-title span { color: var(--beige); display: block; }
+  .hero-desc { font-size: 15px; line-height: 1.7; color: var(--muted); max-width: 380px; margin-bottom: 48px; }
+  .hero-buttons { display: flex; gap: 16px; flex-wrap: wrap; }
+  .btn-primary { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 3px; text-transform: uppercase; color: var(--black); background: var(--beige); padding: 16px 40px; text-decoration: none; transition: all 0.3s; border: none; cursor: pointer; }
+  .btn-primary:hover { background: var(--beige-light); transform: translateY(-2px); }
+  .btn-secondary { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 3px; text-transform: uppercase; color: var(--beige); border: 1px solid rgba(196,168,130,0.4); padding: 16px 40px; text-decoration: none; transition: all 0.3s; background: none; cursor: pointer; }
+  .btn-secondary:hover { border-color: var(--beige); background: rgba(196,168,130,0.05); }
+  .hero-stats { display: flex; gap: 48px; margin-top: 64px; padding-top: 40px; border-top: 1px solid rgba(196,168,130,0.12); }
+  .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 36px; color: var(--beige); letter-spacing: 2px; }
+  .stat-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
+
+  .marquee-wrap { background: var(--beige); padding: 14px 0; overflow: hidden; }
+  .marquee-track { display: flex; animation: marquee 20s linear infinite; white-space: nowrap; }
+  .marquee-item { font-family: 'Bebas Neue', sans-serif; font-size: 15px; letter-spacing: 4px; color: var(--black); padding: 0 32px; flex-shrink: 0; }
+  .marquee-dot { color: rgba(0,0,0,0.3); padding: 0 8px; }
+  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  .section { padding: 120px 80px; }
+  .section-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 5px; text-transform: uppercase; color: var(--beige); margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
+  .section-label::before { content: ''; width: 24px; height: 1px; background: var(--beige); }
+  .section-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(48px, 6vw, 88px); line-height: 0.95; letter-spacing: 1px; margin-bottom: 48px; }
+
+  .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+  .about-text p { font-size: 16px; line-height: 1.8; color: var(--muted); margin-bottom: 20px; }
+  .about-text p strong { color: var(--white); font-weight: 400; }
+  .about-features { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin-top: 40px; }
+  .feature { background: var(--card); padding: 28px 24px; border: 1px solid rgba(196,168,130,0.06); transition: border-color 0.3s; }
+  .feature:hover { border-color: rgba(196,168,130,0.25); }
+  .feature-icon { font-size: 24px; margin-bottom: 12px; }
+  .feature-title { font-family: 'Barlow Condensed', sans-serif; font-size: 14px; letter-spacing: 2px; text-transform: uppercase; color: var(--beige); margin-bottom: 8px; }
+  .feature-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+  .catalog-section { padding: 120px 80px; background: var(--dark); }
+  .catalog-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 64px; }
+  .catalog-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
+  .product-card { background: var(--card); position: relative; overflow: hidden; cursor: pointer; }
+  .product-img { width: 100%; aspect-ratio: 3/4; background: #1e1d19; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; transition: transform 0.6s cubic-bezier(0.25,0.46,0.45,0.94); }
+  .product-card:hover .product-img { transform: scale(1.04); }
+  .product-img img { width: 100%; height: 100%; object-fit: cover; }
+  .product-emoji { font-size: 80px; color: rgba(196,168,130,0.15); }
+  .product-badge { position: absolute; top: 16px; left: 16px; background: var(--beige); color: var(--black); font-family: 'Barlow Condensed', sans-serif; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; padding: 4px 10px; z-index: 2; }
+  .product-info { padding: 20px 24px 24px; border-top: 1px solid rgba(196,168,130,0.08); }
+  .product-club { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--beige); margin-bottom: 6px; }
+  .product-name { font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 600; letter-spacing: 1px; color: var(--white); margin-bottom: 12px; }
+  .product-bottom { display: flex; justify-content: space-between; align-items: center; }
+  .product-price { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: var(--beige); letter-spacing: 2px; }
+  .add-to-cart { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--black); background: var(--beige); border: none; padding: 8px 16px; cursor: pointer; transition: all 0.3s; }
+  .add-to-cart:hover { background: var(--beige-light); transform: translateY(-1px); }
+
+  .delivery-section { padding: 120px 80px; }
+  .delivery-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; margin-top: 64px; }
+  .delivery-card { padding: 40px 32px; background: var(--card); border: 1px solid rgba(196,168,130,0.06); position: relative; overflow: hidden; }
+  .delivery-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: var(--beige); transform: scaleX(0); transform-origin: left; transition: transform 0.4s; }
+  .delivery-card:hover::before { transform: scaleX(1); }
+  .delivery-num { font-family: 'Bebas Neue', sans-serif; font-size: 60px; color: rgba(196,168,130,0.1); line-height: 1; margin-bottom: 16px; }
+  .delivery-title { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; letter-spacing: 2px; text-transform: uppercase; color: var(--white); margin-bottom: 12px; }
+  .delivery-text { font-size: 13px; line-height: 1.7; color: var(--muted); }
+
+  .contact-section { padding: 120px 80px; background: var(--dark); display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+  .contact-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(60px, 7vw, 100px); line-height: 0.9; margin-bottom: 24px; }
+  .contact-title span { color: var(--beige); }
+  .contact-desc { font-size: 15px; line-height: 1.7; color: var(--muted); margin-bottom: 40px; }
+  .contact-links { display: flex; flex-direction: column; gap: 2px; }
+  .contact-link { display: flex; align-items: center; gap: 16px; padding: 20px 24px; background: var(--card); text-decoration: none; border: 1px solid rgba(196,168,130,0.06); transition: all 0.3s; }
+  .contact-link:hover { border-color: rgba(196,168,130,0.3); background: rgba(196,168,130,0.04); }
+  .contact-link-icon { font-size: 22px; }
+  .contact-link-text { font-family: 'Barlow Condensed', sans-serif; font-size: 15px; letter-spacing: 2px; text-transform: uppercase; color: var(--white); }
+  .contact-link-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .contact-link-arrow { margin-left: auto; color: var(--beige); font-size: 18px; transition: transform 0.3s; }
+  .contact-link:hover .contact-link-arrow { transform: translateX(4px); }
+
+  footer { padding: 40px 80px; border-top: 1px solid rgba(196,168,130,0.1); display: flex; justify-content: space-between; align-items: center; }
+  .footer-logo img { height: 40px; width: auto; object-fit: contain; border-radius: 6px; }
+  .footer-copy { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); }
+
+  .cart-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+  .cart-overlay.open { opacity: 1; pointer-events: all; }
+  .cart-sidebar { position: fixed; top: 0; right: -500px; width: 460px; max-width: 100vw; height: 100vh; background: var(--dark); border-left: 1px solid rgba(196,168,130,0.15); z-index: 201; transition: right 0.4s cubic-bezier(0.25,0.46,0.45,0.94); display: flex; flex-direction: column; }
+  .cart-sidebar.open { right: 0; }
+  .cart-header { padding: 28px 32px; border-bottom: 1px solid rgba(196,168,130,0.12); display: flex; justify-content: space-between; align-items: center; }
+  .cart-header h3 { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 2px; color: var(--white); }
+  .cart-close { background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer; transition: color 0.3s; line-height: 1; }
+  .cart-close:hover { color: var(--white); }
+  .cart-items { flex: 1; overflow-y: auto; padding: 24px 32px; }
+  .cart-empty { text-align: center; padding: 60px 0; font-family: 'Barlow Condensed', sans-serif; font-size: 14px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); }
+  .cart-item { display: flex; gap: 16px; padding: 16px 0; border-bottom: 1px solid rgba(196,168,130,0.08); align-items: flex-start; }
+  .cart-item-info { flex: 1; }
+  .cart-item-name { font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 600; letter-spacing: 1px; color: var(--white); margin-bottom: 4px; }
+  .cart-item-club { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--beige); }
+  .cart-item-price { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--beige); letter-spacing: 2px; margin-top: 8px; }
+  .cart-item-remove { background: none; border: 1px solid rgba(196,168,130,0.15); color: var(--muted); font-size: 14px; cursor: pointer; transition: all 0.2s; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+  .cart-item-remove:hover { border-color: #e05050; color: #e05050; background: rgba(224,80,80,0.08); }
+  .cart-footer { padding: 24px 32px; border-top: 1px solid rgba(196,168,130,0.12); }
+  .cart-total { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+  .cart-total-label { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); }
+  .cart-total-price { font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: var(--beige); letter-spacing: 2px; }
+  .cart-order-btn { width: 100%; font-family: 'Barlow Condensed', sans-serif; font-size: 14px; letter-spacing: 3px; text-transform: uppercase; color: var(--black); background: var(--beige); border: none; padding: 18px; cursor: pointer; transition: all 0.3s; }
+  .cart-order-btn:hover { background: var(--beige-light); }
+
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 300; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; padding: 20px; }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal { background: var(--dark); width: 100%; max-width: 580px; max-height: 92vh; overflow-y: auto; border: 1px solid rgba(196,168,130,0.2); transform: translateY(20px); transition: transform 0.3s; }
+  .modal-overlay.open .modal { transform: translateY(0); }
+  .modal-header { padding: 24px 32px; border-bottom: 1px solid rgba(196,168,130,0.12); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: var(--dark); z-index: 1; }
+  .modal-header h3 { font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: 2px; color: var(--white); }
+  .modal-close { background: none; border: none; color: var(--muted); font-size: 22px; cursor: pointer; transition: color 0.3s; line-height: 1; }
+  .modal-close:hover { color: var(--white); }
+  .modal-body { padding: 28px 32px; }
+  .modal-cart-summary { background: var(--card); padding: 16px 20px; margin-bottom: 24px; border: 1px solid rgba(196,168,130,0.1); }
+  .modal-cart-summary-title { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--beige); margin-bottom: 12px; }
+  .modal-cart-item { font-size: 13px; color: var(--muted); padding: 4px 0; display: flex; justify-content: space-between; }
+  .form-group { margin-bottom: 18px; }
+  .form-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--beige); display: block; margin-bottom: 8px; }
+  .form-input, .form-select, .form-textarea { width: 100%; background: var(--card); border: 1px solid rgba(196,168,130,0.15); color: var(--white); padding: 13px 16px; font-family: 'Barlow', sans-serif; font-size: 14px; outline: none; transition: border-color 0.3s; }
+  .form-input::placeholder, .form-textarea::placeholder { color: var(--muted); }
+  .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--beige); }
+  .form-select { appearance: none; cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b6558' fill='none' stroke-width='1.5'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; }
+  .form-select option { background: #1a1a17; color: var(--white); }
+  .form-textarea { resize: vertical; min-height: 80px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .teams-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .team-chip { padding: 9px 6px; text-align: center; border: 1px solid rgba(196,168,130,0.15); background: var(--card); cursor: pointer; font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 1px; color: var(--muted); transition: all 0.2s; user-select: none; }
+  .team-chip.selected { border-color: #e05050; color: #e05050; background: rgba(224,80,80,0.08); }
+  .team-chip:hover:not(.selected) { border-color: rgba(196,168,130,0.4); color: var(--white); }
+  .teams-hint { font-size: 12px; color: var(--muted); margin-bottom: 10px; line-height: 1.5; }
+  .submit-btn { width: 100%; font-family: 'Barlow Condensed', sans-serif; font-size: 14px; letter-spacing: 3px; text-transform: uppercase; color: var(--black); background: var(--beige); border: none; padding: 18px; cursor: pointer; transition: all 0.3s; margin-top: 8px; }
+  .submit-btn:hover { background: var(--beige-light); }
+  .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .form-success { text-align: center; padding: 48px 20px; display: none; }
+  .form-success-icon { font-size: 52px; margin-bottom: 16px; }
+  .form-success-title { font-family: 'Bebas Neue', sans-serif; font-size: 40px; letter-spacing: 2px; color: var(--beige); margin-bottom: 12px; }
+  .form-success-text { font-size: 15px; color: var(--muted); line-height: 1.8; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+  .hero-left > * { animation: fadeUp 0.8s ease forwards; opacity: 0; }
+  .hero-left > *:nth-child(1) { animation-delay: 0.1s; }
+  .hero-left > *:nth-child(2) { animation-delay: 0.25s; }
+  .hero-left > *:nth-child(3) { animation-delay: 0.4s; }
+  .hero-left > *:nth-child(4) { animation-delay: 0.55s; }
+  .hero-left > *:nth-child(5) { animation-delay: 0.7s; }
+
+  @media (max-width: 900px) {
+    nav { padding: 12px 20px; }
+    .nav-links { display: none; }
+    .hero { grid-template-columns: 1fr; }
+    .hero-left { padding: 40px 24px; }
+    .section, .delivery-section { padding: 80px 24px; }
+    .catalog-section { padding: 80px 24px; }
+    .catalog-header { flex-direction: column; align-items: flex-start; gap: 20px; }
+    .about-grid { grid-template-columns: 1fr; gap: 40px; }
+    .catalog-grid { grid-template-columns: 1fr 1fr; }
+    .delivery-grid { grid-template-columns: 1fr 1fr; }
+    .contact-section { grid-template-columns: 1fr; padding: 80px 24px; gap: 40px; }
+    footer { padding: 28px 20px; }
+    .form-row { grid-template-columns: 1fr; }
+    .teams-grid { grid-template-columns: repeat(3, 1fr); }
+    .cart-sidebar { width: 100vw; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo"><img src="logo.png" alt="Worken"></div>
+  <ul class="nav-links">
+    <li><a href="#about">О нас</a></li>
+    <li><a href="#catalog">Каталог</a></li>
+    <li><a href="#delivery">Доставка</a></li>
+    <li><a href="#contact">Контакт</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="cart-btn" onclick="openCart()">🛒 Корзина <span class="cart-count" id="cartCount">0</span></button>
+    <a href="#" class="nav-cta" onclick="openOrderModal(event)">Заказать</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-video-bg">
+    <video id="bgVideo" autoplay muted loop playsinline>
+      <source src="bg.mp4" type="video/mp4">
+    </video>
+  </div>
+  <div class="hero-video-overlay"></div>
+  <div class="hero-left">
+    <div class="hero-tag">Blokecore | Семей, Казахстан</div>
+    <h1 class="hero-title">WORKEN<span>STORE</span></h1>
+    <p class="hero-desc">Футбольные формы и Blokecore одежда. Уличный стиль встречает спортивную культуру. Доставка по всему Казахстану.</p>
+    <div class="hero-buttons">
+      <a href="#catalog" class="btn-primary">Смотреть каталог</a>
+      <button class="btn-secondary" onclick="openOrderModal(event)">Оформить заказ</button>
+    </div>
+    <div class="hero-stats">
+      <div><div class="stat-num">289+</div><div class="stat-label">Подписчиков</div></div>
+      <div><div class="stat-num">3–10</div><div class="stat-label">Дней доставка</div></div>
+      <div><div class="stat-num">100%</div><div class="stat-label">В наличии</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <span class="marquee-item">BLOKECORE</span><span class="marquee-dot">✦</span>
+    <span class="marquee-item">ФУТБОЛЬНЫЕ ФОРМЫ</span><span class="marquee-dot">✦</span>
+    <span class="marquee-item">WORKEN STORE</span><span class="marquee-dot">✦</span>
+    <span class="marquee-item">ДОСТАВКА ПО КАЗАХСТАНУ</span><span class="marquee-dot">✦</span>
+    <span class="marquee-item">УЛИЧНЫЙ СТИЛЬ</span><span class="marquee-dot">✦</span>
+    <span class="marquee-item">СЕМЕЙ</span><span class="marquee-dot">✦</span>
+    <span class="marquee-item">BLOKECORE</span><span class="marquee-dot">✦</span>
+    <span class="marquee-item">ФУТБОЛЬНЫЕ ФОРМЫ</span><span class="marquee-dot">✦</span>
+    <span class="marquee-item">WORKEN STORE</span><span class="marquee-dot">✦</span>
+    <span class="marquee-item">ДОСТАВКА ПО КАЗАХСТАНУ</span><span class="marquee-dot">✦</span>
+    <span class="marquee-item">УЛИЧНЫЙ СТИЛЬ</span><span class="marquee-dot">✦</span>
+    <span class="marquee-item">СЕМЕЙ</span><span class="marquee-dot">✦</span>
+  </div>
+</div>
+
+<section class="section" id="about">
+  <div class="about-grid">
+    <div>
+      <div class="section-label">О бренде</div>
+      <h2 class="section-title">ЧТО<br>ТАКОЕ<br>WORKEN?</h2>
+    </div>
+    <div class="about-text">
+      <p><strong>WORKEN</strong> — это бренд из Семея, который объединяет культуру футбола и уличной моды. Мы специализируемся на стиле Blokecore — тренде, который ворвался в уличную культуру по всему миру.</p>
+      <p>Широкие кройки, <strong>спортивные элементы</strong>, контрастные цвета и яркие графические принты — это то, что делает наши вещи особенными. Каждая деталь продумана до мелочей.</p>
+      <div class="about-features">
+        <div class="feature"><div class="feature-icon">📦</div><div class="feature-title">В наличии</div><div class="feature-desc">Все товары уже у нас — никаких долгих ожиданий</div></div>
+        <div class="feature"><div class="feature-icon">🚚</div><div class="feature-title">Казахстан</div><div class="feature-desc">Доставка по всей стране от 3 до 10 дней</div></div>
+        <div class="feature"><div class="feature-icon">⚽</div><div class="feature-title">Blokecore</div><div class="feature-desc">Лучшие футбольные формы в стиле уличной моды</div></div>
+        <div class="feature"><div class="feature-icon">🎁</div><div class="feature-title">Mystery Box</div><div class="feature-desc">Сюрпризные боксы с топовыми вещами</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="catalog-section" id="catalog">
+  <div class="catalog-header">
+    <div>
+      <div class="section-label">Ассортимент</div>
+      <h2 class="section-title">КАТАЛОГ</h2>
+    </div>
+    <a href="https://instagram.com/worken.semey" class="btn-secondary">Все товары в Instagram →</a>
+  </div>
+  <div class="catalog-grid" id="catalogGrid"></div>
+</section>
+
+<section class="delivery-section" id="delivery">
+  <div class="section-label">Логистика</div>
+  <h2 class="section-title">КАК МЫ<br>ДОСТАВЛЯЕМ</h2>
+  <div class="delivery-grid">
+    <div class="delivery-card"><div class="delivery-num">01</div><div class="delivery-title">Выбираешь</div><div class="delivery-text">Смотришь каталог, выбираешь понравившуюся вещь и размер</div></div>
+    <div class="delivery-card"><div class="delivery-num">02</div><div class="delivery-title">Пишешь</div><div class="delivery-text">Оформляешь заказ на сайте или пишешь в WhatsApp — ответим быстро</div></div>
+    <div class="delivery-card"><div class="delivery-num">03</div><div class="delivery-title">Оплачиваешь</div><div class="delivery-text">Удобная оплата. Отправляем сразу после подтверждения заказа</div></div>
+    <div class="delivery-card"><div class="delivery-num">04</div><div class="delivery-title">Получаешь</div><div class="delivery-text">Доставка по всему Казахстану от 3 до 10 дней. Трекинг посылки</div></div>
+  </div>
+</section>
+
+<section class="contact-section" id="contact">
+  <div>
+    <div style="display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(196,168,130,0.2);padding:10px 20px;margin-bottom:32px;">
+      <span style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--beige);">📍 Семей, Казахстан</span>
+    </div>
+    <h2 class="contact-title">ПИШИТЕ<br><span>НАМ</span></h2>
+    <p class="contact-desc">Есть вопросы по размеру, наличию или доставке? Напишите — отвечаем быстро. Работаем каждый день.</p>
+  </div>
+  <div class="contact-links">
+    <a href="https://wa.me/7077497330" class="contact-link">
+      <span class="contact-link-icon">💬</span>
+      <div><div class="contact-link-text">WhatsApp</div><div class="contact-link-sub">+7 707 749 73 30</div></div>
+      <span class="contact-link-arrow">→</span>
+    </a>
+    <a href="https://instagram.com/worken.semey" class="contact-link">
+      <span class="contact-link-icon">📸</span>
+      <div><div class="contact-link-text">Instagram</div><div class="contact-link-sub">@worken.semey</div></div>
+      <span class="contact-link-arrow">→</span>
+    </a>
+    <div class="contact-link" style="cursor:default">
+      <span class="contact-link-icon">🕐</span>
+      <div><div class="contact-link-text">График работы</div><div class="contact-link-sub">Каждый день — отвечаем быстро</div></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo"><img src="logo.png" alt="Worken"></div>
+  <div class="footer-copy">© 2025 Worken Store — Семей, Казахстан</div>
+</footer>
+
+<!-- CART -->
+<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+<div class="cart-sidebar" id="cartSidebar">
+  <div class="cart-header">
+    <h3>КОРЗИНА</h3>
+    <button class="cart-close" onclick="closeCart()">✕</button>
+  </div>
+  <div class="cart-items" id="cartItems"><div class="cart-empty">Корзина пуста</div></div>
+  <div class="cart-footer" id="cartFooter" style="display:none">
+    <div class="cart-total">
+      <div class="cart-total-label">Итого</div>
+      <div class="cart-total-price" id="cartTotalPrice">0 ₸</div>
+    </div>
+    <button class="cart-order-btn" onclick="proceedToOrder()">Оформить заказ →</button>
+  </div>
+</div>
+
+<!-- ORDER MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>ОФОРМЛЕНИЕ ЗАКАЗА</h3>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="orderForm">
+        <div class="modal-cart-summary" id="modalCartSummary" style="display:none">
+          <div class="modal-cart-summary-title">Ваши товары</div>
+          <div id="modalCartItems"></div>
+          <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(196,168,130,0.1);display:flex;justify-content:space-between;">
+            <span style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">Итого</span>
+            <span style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--beige);letter-spacing:2px" id="modalTotal"></span>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Ваше имя *</label>
+            <input class="form-input" id="fieldName" type="text" placeholder="Введите ваше имя">
+          </div>
+          <div class="form-group">
+            <label class="form-label">WhatsApp *</label>
+            <input class="form-input" id="fieldWhatsapp" type="tel" placeholder="+7 777 000 00 00">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Размер *</label>
+            <select class="form-select" id="fieldSize">
+              <option value="">Выберите размер</option>
+              <option>XS</option><option>S</option><option>M</option>
+              <option>L</option><option>XL</option><option>XXL</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Город *</label>
+            <input class="form-input" id="fieldCity" type="text" placeholder="Введите ваш город">
+          </div>
+        </div>
+        <div class="form-group" id="fieldProductGroup">
+          <label class="form-label">Товар *</label>
+          <input class="form-input" id="fieldProduct" type="text" placeholder="Название товара или ссылка">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Способ доставки *</label>
+          <select class="form-select" id="fieldDelivery">
+            <option value="">Выберите способ</option>
+            <option>Казпочта</option>
+            <option>Курьер</option>
+            <option>Самовывоз (Семей)</option>
+          </select>
+        </div>
+        <div class="form-group" id="teamsSection" style="display:none">
+          <label class="form-label">Какие 3 команды НЕ хотите видеть в боксе?</label>
+          <p class="teams-hint">Выберите до 3 команд — их форм не будет в вашем Mystery Box</p>
+          <div class="teams-grid" id="teamsGrid"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Комментарий</label>
+          <textarea class="form-textarea" id="fieldComment" placeholder="Любые пожелания или уточнения..."></textarea>
+        </div>
+        <button class="submit-btn" id="submitBtn" onclick="submitOrder()">Отправить заказ</button>
+      </div>
+      <div class="form-success" id="formSuccess">
+        <div class="form-success-icon">✅</div>
+        <div class="form-success-title">ЗАКАЗ ПРИНЯТ!</div>
+        <div class="form-success-text">Ваш заказ успешно отправлен!<br>Мы свяжемся с вами в WhatsApp в ближайшее время.<br><br>Спасибо, что выбрали <strong>WORKEN</strong>! 🔥</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// ТОВАРЫ — РЕДАКТИРУЙ ЗДЕСЬ
+// image: "photos/файл.jpg"  — если есть фото
+// image: null               — если нет фото (покажет emoji)
+// isMysteryBox: true        — только для Mystery Box
+// ============================================================
+const PRODUCTS = [
+  {
+    id: 1,
+    club: "Real Madrid",
+    name: "Форма Away 2024/25",
+    price: 8500,
+    badge: "Хит",
+    image: null,
+    emoji: "⚽",
+    isMysteryBox: false
+  },
+  {
+    id: 2,
+    club: "Juventus",
+    name: "Форма Home 2024/25",
+    price: 8500,
+    badge: "Новинка",
+    image: null,
+    emoji: "🏆",
+    isMysteryBox: false
+  },
+  {
+    id: 3,
+    club: "Worken Exclusive",
+    name: "Random Mystery Box",
+    price: 12000,
+    badge: null,
+    image: null,
+    emoji: "🎁",
+    isMysteryBox: true
+  }
+];
+
+const TEAMS = [
+  "Real Madrid","Barcelona","Man City","Man United",
+  "Liverpool","Chelsea","Arsenal","Juventus",
+  "PSG","Bayern","Dortmund","Inter Milan",
+  "AC Milan","Atletico","Ajax","Porto"
+];
+
+const TG_TOKEN = "8829176381:AAFj_pkIkzWhfNZL2o2JWdd10uTct8Ipqbg";
+const TG_CHAT  = "1035484871";
+
+let cart = [];
+let selectedTeams = [];
+
+function hasMysteryBox() {
+  return cart.some(c => PRODUCTS.find(p => p.id === c.id && p.isMysteryBox));
+}
+
+function renderCatalog() {
+  document.getElementById('catalogGrid').innerHTML = PRODUCTS.map(p => `
+    <div class="product-card">
+      <div class="product-img">
+        ${p.image ? `<img src="${p.image}" alt="${p.name}">` : `<span class="product-emoji">${p.emoji}</span>`}
+        ${p.badge ? `<div class="product-badge">${p.badge}</div>` : ''}
+      </div>
+      <div class="product-info">
+        <div class="product-club">${p.club}</div>
+        <div class="product-name">${p.name}</div>
+        <div class="product-bottom">
+          <div class="product-price">${p.price.toLocaleString('ru')} ₸</div>
+          <button class="add-to-cart" onclick="addToCart(${p.id})">В корзину</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function renderTeams() {
+  document.getElementById('teamsGrid').innerHTML = TEAMS.map(t =>
+    `<div class="team-chip" onclick="toggleTeam(this,'${t}')">${t}</div>`).join('');
+}
+
+function toggleTeam(el, team) {
+  if (el.classList.contains('selected')) {
+    el.classList.remove('selected');
+    selectedTeams = selectedTeams.filter(t => t !== team);
+  } else {
+    if (selectedTeams.length >= 3) { alert('Можно выбрать максимум 3 команды'); return; }
+    el.classList.add('selected');
+    selectedTeams.push(team);
+  }
+}
+
+function addToCart(id) {
+  const ex = cart.find(c => c.id === id);
+  if (ex) ex.qty++; else cart.push({ id, qty: 1 });
+  updateCartUI();
+  openCart();
+}
+
+function removeFromCart(id) {
+  cart = cart.filter(c => c.id !== id);
+  updateCartUI();
+}
+
+function cartTotal() {
+  return cart.reduce((s, c) => {
+    const p = PRODUCTS.find(p => p.id === c.id);
+    return s + (p ? p.price * c.qty : 0);
+  }, 0);
+}
+
+function updateCartUI() {
+  const count = cart.reduce((s, c) => s + c.qty, 0);
+  const countEl = document.getElementById('cartCount');
+  if (count > 0) { countEl.textContent = count; countEl.classList.add('visible'); }
+  else countEl.classList.remove('visible');
+
+  const itemsEl = document.getElementById('cartItems');
+  const footerEl = document.getElementById('cartFooter');
+
+  if (cart.length === 0) {
+    itemsEl.innerHTML = '<div class="cart-empty">Корзина пуста</div>';
+    footerEl.style.display = 'none';
+  } else {
+    itemsEl.innerHTML = cart.map(c => {
+      const p = PRODUCTS.find(p => p.id === c.id);
+      return `<div class="cart-item">
+        <div class="cart-item-info">
+          <div class="cart-item-club">${p.club}</div>
+          <div class="cart-item-name">${p.name}${c.qty > 1 ? ' x' + c.qty : ''}</div>
+          <div class="cart-item-price">${(p.price * c.qty).toLocaleString('ru')} ₸</div>
+        </div>
+        <button class="cart-item-remove" onclick="removeFromCart(${c.id})">✕</button>
+      </div>`;
+    }).join('');
+    footerEl.style.display = 'block';
+  }
+  document.getElementById('cartTotalPrice').textContent = cartTotal().toLocaleString('ru') + ' ₸';
+}
+
+function openCart() {
+  document.getElementById('cartOverlay').classList.add('open');
+  document.getElementById('cartSidebar').classList.add('open');
+}
+function closeCart() {
+  document.getElementById('cartOverlay').classList.remove('open');
+  document.getElementById('cartSidebar').classList.remove('open');
+}
+function proceedToOrder() { closeCart(); openOrderModal(null); }
+
+function openOrderModal(e) {
+  if (e) e.preventDefault();
+  document.getElementById('orderForm').style.display = 'block';
+  document.getElementById('formSuccess').style.display = 'none';
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = false; btn.textContent = 'Отправить заказ';
+
+  const summaryEl = document.getElementById('modalCartSummary');
+  const productGroup = document.getElementById('fieldProductGroup');
+  if (cart.length > 0) {
+    summaryEl.style.display = 'block';
+    document.getElementById('modalCartItems').innerHTML = cart.map(c => {
+      const p = PRODUCTS.find(p => p.id === c.id);
+      return `<div class="modal-cart-item"><span>${p.name}${c.qty > 1 ? ' x' + c.qty : ''}</span><span>${(p.price * c.qty).toLocaleString('ru')} ₸</span></div>`;
+    }).join('');
+    document.getElementById('modalTotal').textContent = cartTotal().toLocaleString('ru') + ' ₸';
+    productGroup.style.display = 'none';
+  } else {
+    summaryEl.style.display = 'none';
+    productGroup.style.display = 'block';
+  }
+
+  document.getElementById('teamsSection').style.display = hasMysteryBox() ? 'block' : 'none';
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
+
+document.getElementById('fieldProduct').addEventListener('input', function() {
+  const v = this.value.toLowerCase();
+  document.getElementById('teamsSection').style.display =
+    (v.includes('box') || v.includes('бокс')) ? 'block' : 'none';
+});
+
+async function submitOrder() {
+  const name     = document.getElementById('fieldName').value.trim();
+  const whatsapp = document.getElementById('fieldWhatsapp').value.trim();
+  const size     = document.getElementById('fieldSize').value;
+  const city     = document.getElementById('fieldCity').value.trim();
+  const delivery = document.getElementById('fieldDelivery').value;
+  const product  = document.getElementById('fieldProduct').value.trim();
+  const comment  = document.getElementById('fieldComment').value.trim();
+
+  if (!name || !whatsapp || !size || !city || !delivery) {
+    alert('Пожалуйста, заполните все обязательные поля (*)');
+    return;
+  }
+
+  let cartText = cart.length > 0
+    ? cart.map(c => { const p = PRODUCTS.find(p => p.id === c.id); return `  • ${p.name} (${p.club}) x${c.qty} — ${(p.price*c.qty).toLocaleString('ru')} ₸`; }).join('\n') + `\n  💰 Итого: ${cartTotal().toLocaleString('ru')} ₸`
+    : `  ${product || 'Не указан'}`;
+
+  const showTeams = hasMysteryBox() || product.toLowerCase().includes('box') || product.toLowerCase().includes('бокс');
+  const teamsText = selectedTeams.length > 0 ? selectedTeams.join(', ') : 'Не указано';
+
+  const message = `🛍 *НОВЫЙ ЗАКАЗ — WORKEN*\n\n👤 *Имя:* ${name}\n📱 *WhatsApp:* ${whatsapp}\n📍 *Город:* ${city}\n📦 *Доставка:* ${delivery}\n📐 *Размер:* ${size}\n\n🛒 *Товары:*\n${cartText}${showTeams ? `\n\n🚫 *Не хочет в боксе:* ${teamsText}` : ''}\n\n💬 *Комментарий:* ${comment || 'Нет'}`;
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true; btn.textContent = 'Отправляю...';
+
+  try {
+    const res = await fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: TG_CHAT, text: message, parse_mode: 'Markdown' })
+    });
+    const data = await res.json();
+    if (data.ok) {
+      document.getElementById('orderForm').style.display = 'none';
+      document.getElementById('formSuccess').style.display = 'block';
+      cart = []; selectedTeams = []; updateCartUI();
+      document.querySelectorAll('.team-chip').forEach(el => el.classList.remove('selected'));
+    } else throw new Error(data.description);
+  } catch(err) {
+    btn.disabled = false; btn.textContent = 'Отправить заказ';
+    alert('Не удалось отправить. Напишите нам напрямую в WhatsApp: +7 707 749 73 30');
+  }
+}
+
+window.addEventListener('scroll', () => {
+  const v = document.getElementById('bgVideo');
+  if (v) v.style.transform = `translateY(${window.scrollY * 0.35}px)`;
+});
+
+document.getElementById('modalOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+renderCatalog();
+renderTeams();
+</script>
+</body>
+</html>
